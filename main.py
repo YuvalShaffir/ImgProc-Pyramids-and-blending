@@ -64,10 +64,10 @@ def reduce(im, blur_filter):
     :param blur_filter: Blur filter
     :return: the downsampled image
     """
+    # Convolve twice with the blur filter
     blurred_image = convolve(convolve(im, blur_filter, mode='constant'), blur_filter.T, mode='constant')
-    # plt.imshow(blurred_image, cmap='gray')
-    # plt.show()
-    return blurred_image[::2, ::2]
+    # delete every second pixel
+    return blurred_image[::2, ::2] 
 
 
 def expand(im, blur_filter):
@@ -78,7 +78,8 @@ def expand(im, blur_filter):
     :return: the expanded image
     """
     blur_filter = blur_filter * 2
-
+    
+    # Scale up the image, add zero every second pixel
     up_scaled_im = np.zeros((2 * im.shape[0], 2 * im.shape[1]), np.float64)
     up_scaled_im[::2, ::2] = im
 
@@ -89,15 +90,17 @@ def expand(im, blur_filter):
 
 def blur_filter_generator(filter_size):
     """generates a blur filter vector from filter size"""
-    kernel = DEFAULT_KERNAL_ARRAY
+    kernel = DEFAULT_KERNAL_ARRAY # [1,1]
     vec_length = DEFAULT_KERNAL_LENGTH
     filter_vec = kernel
-
+    
+    # convolve filter with [1,1] until it gets to the filter size
     while vec_length < filter_size:
         filter_vec = signal.convolve(filter_vec, kernel)
         vec_length += 1
-
-    filter_vec = filter_vec / sum(filter_vec)  # normalization
+        
+     # normalization
+    filter_vec = filter_vec / sum(filter_vec) 
 
     return filter_vec
 
